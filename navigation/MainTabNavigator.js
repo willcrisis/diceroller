@@ -1,79 +1,68 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
+import { Appbar } from 'react-native-paper';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import screens, { config as tabsConfig } from '../screens/tabs';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
   default: {},
 });
 
-const HomeStack = createStackNavigator(
-  {
-    Home: HomeScreen,
-  },
-  config
-);
+const reduceFn = (acc, { id, Component }) => {
+  let routes;
+  if (typeof Component === 'object' && !Component.screen) {
+    routes = Object.keys(Component.screens)
+      .map(id => ({ id, Component: Component.screens[id] }))
+      .reduce(reduceFn, {});
+  } else {
+    const Comp = Component.screen || Component;
+    const Screen = props => <Comp {...props} />;
+    Screen.navigationOptions = props => {
+      return {
+        header: (
+          <Appbar.Header>
+            <Appbar.Content title={Comp.title} />
+          </Appbar.Header>
+        ),
+        ...(typeof Comp.navigationOptions === 'function'
+          ? Comp.navigationOptions(props)
+          : Comp.navigationOptions),
+      };
+    };
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+    routes = {
+      [id]: Screen,
+    };
+  }
+
+  const Stack = createStackNavigator(routes, Object.assign({}, config, Component.config));
+
+  Stack.navigationOptions = {
+    tabBarLabel: Component.title,
+    tabBarIcon: ({ focused }) => (
+      <TabBarIcon
+        focused={focused}
+        name={Platform.OS === 'ios' ? `ios-${Component.iconName}` : `md-${Component.iconName}`}
+      />
+    ),
+  };
+
+  Stack.path = Component.path || '';
+
+  return {
+    ...acc,
+    [id]: Stack,
+  };
 };
 
-HomeStack.path = '';
+const routes = Object.keys(screens)
+  .map(id => ({ id, Component: screens[id] }))
+  .reduce(reduceFn, {});
 
-const LinksStack = createStackNavigator(
-  {
-    Links: LinksScreen,
-  },
-  config
-);
+const TabNavigator = createMaterialBottomTabNavigator(routes, tabsConfig);
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
-  ),
-};
-
-LinksStack.path = '';
-
-const SettingsStack = createStackNavigator(
-  {
-    Settings: SettingsScreen,
-  },
-  config
-);
-
-SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
-  ),
-};
-
-SettingsStack.path = '';
-
-const tabNavigator = createMaterialBottomTabNavigator({
-  HomeStack,
-  LinksStack,
-  SettingsStack,
-});
-
-tabNavigator.path = '';
-
-export default tabNavigator;
+export default TabNavigator;

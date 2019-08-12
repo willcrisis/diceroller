@@ -20,6 +20,7 @@
     "expo-constants": "6.0.0",
     "expo-font": "~6.0.0",
     "expo-web-browser": "6.0.0",
+    "firebase": "^6.4.0",
     "react": "16.8.3",
     "react-dom": "^16.8.6",
     "react-native": "https://github.com/expo/react-native/archive/sdk-34.0.0.tar.gz",
@@ -31,7 +32,10 @@
   },
   "devDependencies": {
     "babel-preset-expo": "^6.0.0",
-    "jest-expo": "^34.0.0"
+    "eslint": "^6.3.0",
+    "eslint-config-universe": "^1.0.7",
+    "jest-expo": "^34.0.0",
+    "prettier": "^1.18.2"
   },
   "private": true
 }
