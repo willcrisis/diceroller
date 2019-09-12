@@ -55,7 +55,7 @@ const SessionMenu = ({ removeSession, session, ...props }) => {
       anchor={<IconButton {...props} icon="more-vert" onPress={() => setVisible(true)} />}>
       <Menu.Item
         onPress={() => {
-          Clipboard.setString(`http://192.168.0.111:19006/#/join/${session.key}`);
+          Clipboard.setString(`https://willcrisis.github.io/diceroller/#/join/${session.key}`);
           dismiss();
         }}
         title="Copy link"
