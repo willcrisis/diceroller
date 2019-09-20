@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.62e918d4a46188d3ec18b856e1164b8b.js"
+  "/diceroller/precache-manifest.7b49cd475c7e13643f11daaa452f20fb.js"
 );
 
 workbox.clientsClaim();
@@ -27,3 +27,8 @@ workbox.clientsClaim();
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
+
+workbox.routing.registerNavigationRoute("/diceroller/index.html", {
+  
+  blacklist: [/^\/_/,/\/[^\/]+\.[^\/]+$/],
+});
