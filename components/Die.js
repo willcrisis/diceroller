@@ -33,7 +33,9 @@ const Die = ({ type, value, onPress }) => {
   const TouchableComponent = TouchableRipple.supported ? TouchableRipple : TouchableOpacity;
 
   const handleOnPress = () => {
-    animateToValue(scaleAnimation, 0, onPress);
+    if (onPress) {
+      animateToValue(scaleAnimation, 0, onPress);
+    }
   };
 
   return (
