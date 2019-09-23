@@ -45,7 +45,6 @@ export const loadData = async (
   setSessions,
   setCurrentUser,
   setCurrentSession,
-  setSessionOwner,
   setSessionDice
 ) => {
   return FirebaseDataService.loadData(
@@ -55,7 +54,6 @@ export const loadData = async (
     setSessions,
     setCurrentUser,
     setCurrentSession,
-    setSessionOwner,
     setSessionDice
   );
 };

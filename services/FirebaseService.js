@@ -48,7 +48,6 @@ export const loadData = async (
   setDice,
   setSessions,
   setCurrentSession,
-  setSessionOwner,
   setSessionDice
 ) => {
   const unsubscribes = [];
@@ -100,7 +99,6 @@ export const loadData = async (
         if (!snapshot.exists) {
           setCurrentSession(null);
           setDice([]);
-          setSessionOwner(false);
           setSessionDice([]);
           return AsyncStorage.removeItem('currentSession');
         }
@@ -123,41 +121,34 @@ export const loadData = async (
             })
         );
 
-        if (session.owner === currentUserId) {
-          setSessionOwner(true);
+        let usersDice = {};
+        const usersSnapshot = await snapshot.ref.collection('users').get();
+        usersSnapshot.forEach(async userSnapshot => {
+          if (userSnapshot.id !== session.owner) {
+            const userData = await firestoreRef.doc(`users/${userSnapshot.id}`).get();
+            const user = extractData(userData);
+            unsubscribes.push(
+              userSnapshot.ref.collection('dice').onSnapshot(userDiceSnapshot => {
+                let userDice = [];
+                userDiceSnapshot.forEach(dieSnapshot => {
+                  userDice = [...userDice, extractData(dieSnapshot)];
+                });
 
-          let usersDice = {};
-          const usersSnapshot = await snapshot.ref.collection('users').get();
-          usersSnapshot.forEach(async userSnapshot => {
-            if (userSnapshot.id !== currentUserId) {
-              const userData = await firestoreRef.doc(`users/${userSnapshot.id}`).get();
-              const user = extractData(userData);
-              unsubscribes.push(
-                userSnapshot.ref.collection('dice').onSnapshot(userDiceSnapshot => {
-                  let userDice = [];
-                  userDiceSnapshot.forEach(dieSnapshot => {
-                    userDice = [...userDice, extractData(dieSnapshot)];
-                  });
+                usersDice = {
+                  ...usersDice,
+                  [userSnapshot.id]: {
+                    user,
+                    dice: userDice,
+                  },
+                };
 
-                  usersDice = {
-                    ...usersDice,
-                    [userSnapshot.id]: {
-                      user,
-                      dice: userDice,
-                    },
-                  };
-
-                  setSessionDice(
-                    Object.values(usersDice).sort((a, b) => sort(a.user.name, b.user.name))
-                  );
-                })
-              );
-            }
-          });
-        } else {
-          setSessionOwner(false);
-          setSessionDice([]);
-        }
+                setSessionDice(
+                  Object.values(usersDice).sort((a, b) => sort(a.user.name, b.user.name))
+                );
+              })
+            );
+          }
+        });
       })
     );
   }

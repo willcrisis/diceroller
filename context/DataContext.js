@@ -34,7 +34,6 @@ const DataContextProvider = ({ children }) => {
   const [dice, setDice] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [currentSession, setCurrentSession] = useState(null);
-  const [isSessionOwner, setSessionOwner] = useState(false);
   const [sessionDice, setSessionDice] = useState([]);
   const [isDataLoading, setDataLoading] = useState([]);
 
@@ -46,7 +45,6 @@ const DataContextProvider = ({ children }) => {
       setDice,
       setSessions,
       setCurrentSession,
-      setSessionOwner,
       setSessionDice
     ).then(subscriptions => {
       setDataLoading(false);
@@ -72,7 +70,6 @@ const DataContextProvider = ({ children }) => {
         getSession,
         currentSession,
         setCurrentSession: chooseSession(setCurrentSession),
-        isSessionOwner,
         sessionDice,
         joinSession: _joinSession(currentUser, sessions),
       }}>
