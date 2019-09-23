@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Headline } from 'react-native-paper';
 import { useData } from '../context/DataContext';
-import { Die, ScreenContainer } from '../components';
+import { Die, ScreenContainer, Spacer } from '../components';
 
 const Row = ({ children }) => <View style={styles.row}>{children}</View>;
 
@@ -42,6 +42,19 @@ const BoardScreen = () => {
     acc[acc.length - 1].push(item);
     return acc;
   }, []);
+
+  if (!groups.length) {
+    return (
+      <ScreenContainer centered>
+        <Headline>To see the Board, first invite some friends to your session.</Headline>
+        <Spacer />
+        <Text>
+          Go to Sessions screen, touch on a session's option icon, copy it's URL and share to your
+          friends.
+        </Text>
+      </ScreenContainer>
+    );
+  }
 
   return (
     <ScreenContainer>
