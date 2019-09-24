@@ -78,8 +78,12 @@ const selectSession = async (session, setCurrentSession, navigation) => {
   navigation.navigate('roll');
 };
 
+const currentSessionBackground = (currentSession, session) => ({
+  backgroundColor: currentSession.key === session.key ? '#52d98f' : '#ffffff',
+});
+
 const SessionsScreen = ({ navigation }) => {
-  const { sessions, addSession, removeSession, setCurrentSession } = useData();
+  const { sessions, addSession, removeSession, setCurrentSession, currentSession } = useData();
   const { currentUser } = useAuth();
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -90,7 +94,7 @@ const SessionsScreen = ({ navigation }) => {
           data={sessions}
           renderItem={({ item }) => (
             <List.Item
-              style={styles.listItem}
+              style={[styles.listItem, currentSessionBackground(currentSession, item)]}
               title={item.name}
               onPress={() => selectSession(item, setCurrentSession, navigation)}
               right={props => (
