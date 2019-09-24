@@ -62,13 +62,13 @@ const SessionMenu = ({ removeSession, session, currentUser, ...props }) => {
         title="Copy link"
         icon="content-copy"
       />
-      {/* {session.owner === currentUser.uid && ( */}
-      <Menu.Item
-        onPress={() => setTimeout(() => removeSession(session), 200)}
-        title="Delete"
-        icon="delete"
-      />
-      {/* )} */}
+      {session.owner === currentUser.uid && (
+        <Menu.Item
+          onPress={() => setTimeout(() => removeSession(session), 200)}
+          title="Delete"
+          icon="delete"
+        />
+      )}
     </Menu>
   );
 };
