@@ -10,12 +10,13 @@ import {
   joinSession,
 } from '../services/DataService';
 import { useAuth } from './AuthContext';
+import { useShowAlert } from './AlertContext';
 
 export const DataContext = createContext({});
 
-const actionBuilder = (array, name, currentUser) => ({
+const actionBuilder = (array, name, currentUser, showAlert) => ({
   [`add${name}`]: value => addData(name, value, array, currentUser),
-  [`remove${name}`]: value => removeData(name, value, array, currentUser),
+  [`remove${name}`]: value => removeData(name, value, array, currentUser, showAlert),
   [`clear${name}`]: () => clearData(name, currentUser),
 });
 
@@ -36,6 +37,7 @@ const DataContextProvider = ({ children }) => {
   const [currentSession, setCurrentSession] = useState(null);
   const [sessionDice, setSessionDice] = useState([]);
   const [isDataLoading, setDataLoading] = useState([]);
+  const showAlert = useShowAlert();
 
   useEffect(() => {
     let unsubscribes;
@@ -64,9 +66,9 @@ const DataContextProvider = ({ children }) => {
       value={{
         isDataLoading,
         dice,
-        ...actionBuilder(dice, ENTITIES.DIE, currentUser),
+        ...actionBuilder(dice, ENTITIES.DIE, currentUser, showAlert),
         sessions,
-        ...actionBuilder(sessions, ENTITIES.SESSION, currentUser),
+        ...actionBuilder(sessions, ENTITIES.SESSION, currentUser, showAlert),
         getSession,
         currentSession,
         setCurrentSession: chooseSession(setCurrentSession),

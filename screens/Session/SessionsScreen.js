@@ -12,6 +12,7 @@ import {
   Menu,
 } from 'react-native-paper';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext';
 import { ScreenContainer } from '../../components';
 
 const dismissModal = (setOpen, setName) => () => {
@@ -45,7 +46,7 @@ const AddSessionDialog = ({ isOpen, setOpen, addSession }) => {
   );
 };
 
-const SessionMenu = ({ removeSession, session, ...props }) => {
+const SessionMenu = ({ removeSession, session, currentUser, ...props }) => {
   const [isVisible, setVisible] = useState(false);
   const dismiss = () => setVisible(false);
   return (
@@ -61,11 +62,13 @@ const SessionMenu = ({ removeSession, session, ...props }) => {
         title="Copy link"
         icon="content-copy"
       />
+      {/* {session.owner === currentUser.uid && ( */}
       <Menu.Item
         onPress={() => setTimeout(() => removeSession(session), 200)}
         title="Delete"
         icon="delete"
       />
+      {/* )} */}
     </Menu>
   );
 };
@@ -77,6 +80,7 @@ const selectSession = async (session, setCurrentSession, navigation) => {
 
 const SessionsScreen = ({ navigation }) => {
   const { sessions, addSession, removeSession, setCurrentSession } = useData();
+  const { currentUser } = useAuth();
   const [isModalOpen, setModalOpen] = useState(false);
 
   return (
@@ -90,7 +94,12 @@ const SessionsScreen = ({ navigation }) => {
               title={item.name}
               onPress={() => selectSession(item, setCurrentSession, navigation)}
               right={props => (
-                <SessionMenu {...props} session={item} removeSession={removeSession} />
+                <SessionMenu
+                  {...props}
+                  session={item}
+                  removeSession={removeSession}
+                  currentUser={currentUser}
+                />
               )}
             />
           )}

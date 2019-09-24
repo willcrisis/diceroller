@@ -16,11 +16,18 @@ export const addData = async (entityName, value, array, currentUser) => {
   }
 };
 
-export const removeData = async (entityName, value, array, currentUser) => {
+export const removeData = async (entityName, value, array, currentUser, showAlert) => {
   switch (entityName) {
     case ENTITIES.DIE:
       return FirebaseDataService.removeDie(value, currentUser);
     case ENTITIES.SESSION:
+      try {
+        return await FirebaseDataService.removeSession(value, array, currentUser);
+      } catch (error) {
+        showAlert({
+          text: error.message,
+        });
+      }
       break;
     default:
       throw new Error('Unknown entity');

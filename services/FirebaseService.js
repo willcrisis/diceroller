@@ -229,6 +229,25 @@ export const getSession = async sessionId => {
   }
 };
 
+export const removeSession = async ({ key }, sessions, currentUser) => {
+  if (!currentUser) {
+    return;
+  }
+  const firestoreRef = firebase.firestore();
+  const sessionSnapshot = await firestoreRef.doc(`sessions/${key}`).get();
+  const session = extractData(sessionSnapshot);
+  if (session.owner === currentUser.uid) {
+    await firestoreRef.doc(`sessions/${key}`).delete();
+    return firestoreRef.doc(`users/${currentUser.uid}`).set(
+      {
+        sessions: sessions.filter(session => session.key !== key).map(session => session.key),
+      },
+      { merge: true }
+    );
+  }
+  throw new Error('You are not the session owner.');
+};
+
 export const joinSession = async (sessionId, sessions, currentUser) => {
   if (!currentUser) {
     return;
