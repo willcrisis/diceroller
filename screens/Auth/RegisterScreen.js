@@ -2,8 +2,17 @@ import React, { useState } from 'react';
 import { TextInput, Headline, Title } from 'react-native-paper';
 import { ScreenContainer, Spacer, OutlinedButton } from '../../components';
 import { useAuth } from '../../context/AuthContext';
+import { useShowAlert } from '../../context/AlertContext';
 
-const validatePassword = (password, confirmPassword) => password === confirmPassword;
+const validatePassword = (showAlert, password, confirmPassword) => {
+  return (
+    password === confirmPassword ||
+    (showAlert({
+      text: 'Passwords must match',
+    }) &&
+      false)
+  );
+};
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -12,6 +21,7 @@ const RegisterScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const { registerWithEmailAndPassword } = useAuth();
+  const showAlert = useShowAlert();
 
   return (
     <ScreenContainer centered>
@@ -55,7 +65,7 @@ const RegisterScreen = ({ navigation }) => {
       <Spacer />
       <OutlinedButton
         onPress={() =>
-          validatePassword(password, confirmPassword) &&
+          validatePassword(showAlert, password, confirmPassword) &&
           registerWithEmailAndPassword(name, email, password)
         }>
         Register
