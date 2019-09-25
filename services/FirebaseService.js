@@ -122,33 +122,39 @@ export const loadData = async (
         );
 
         let usersDice = {};
-        const usersSnapshot = await snapshot.ref.collection('users').get();
-        usersSnapshot.forEach(async userSnapshot => {
-          if (userSnapshot.id !== session.owner) {
-            const userData = await firestoreRef.doc(`users/${userSnapshot.id}`).get();
-            const user = extractData(userData);
-            unsubscribes.push(
-              userSnapshot.ref.collection('dice').onSnapshot(userDiceSnapshot => {
-                let userDice = [];
-                userDiceSnapshot.forEach(dieSnapshot => {
-                  userDice = [...userDice, extractData(dieSnapshot)];
-                });
+        unsubscribes.push(
+          snapshot.ref.collection('users').onSnapshot(usersSnapshot => {
+            usersSnapshot.forEach(async userSnapshot => {
+              if (userSnapshot.id !== session.owner) {
+                unsubscribes.push(
+                  firestoreRef.doc(`users/${userSnapshot.id}`).onSnapshot(userData => {
+                    const user = extractData(userData);
+                    unsubscribes.push(
+                      userSnapshot.ref.collection('dice').onSnapshot(userDiceSnapshot => {
+                        let userDice = [];
+                        userDiceSnapshot.forEach(dieSnapshot => {
+                          userDice = [...userDice, extractData(dieSnapshot)];
+                        });
 
-                usersDice = {
-                  ...usersDice,
-                  [userSnapshot.id]: {
-                    user,
-                    dice: userDice,
-                  },
-                };
+                        usersDice = {
+                          ...usersDice,
+                          [userSnapshot.id]: {
+                            user,
+                            dice: userDice,
+                          },
+                        };
 
-                setSessionDice(
-                  Object.values(usersDice).sort((a, b) => sort(a.user.name, b.user.name))
+                        setSessionDice(
+                          Object.values(usersDice).sort((a, b) => sort(a.user.name, b.user.name))
+                        );
+                      })
+                    );
+                  })
                 );
-              })
-            );
-          }
-        });
+              }
+            });
+          })
+        );
       })
     );
   }

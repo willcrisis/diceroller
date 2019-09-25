@@ -24,6 +24,14 @@ const Window = ({ data: { user, dice } }) => {
   );
 };
 
+const calculateRows = (listSize, index = 2) => {
+  if (listSize <= 3) {
+    return [1, listSize];
+  }
+
+  return [2, Math.ceil(listSize / index)];
+};
+
 const BoardScreen = () => {
   const { sessionDice, currentSession } = useData();
 
@@ -35,15 +43,7 @@ const BoardScreen = () => {
     );
   }
 
-  const groups = sessionDice.reduce((acc, item, index) => {
-    if (index % 3 === 0) {
-      return [...acc, [item]];
-    }
-    acc[acc.length - 1].push(item);
-    return acc;
-  }, []);
-
-  if (!groups.length) {
+  if (!sessionDice.length) {
     return (
       <ScreenContainer centered>
         <Headline>To see the Board, first invite some friends to your session.</Headline>
@@ -54,6 +54,21 @@ const BoardScreen = () => {
         </Text>
       </ScreenContainer>
     );
+  }
+
+  const [rows, elementsPerRow] = calculateRows(sessionDice.length);
+
+  let groups;
+  if (rows === 1) {
+    groups = [sessionDice];
+  } else {
+    groups = sessionDice.reduce((acc, item, index) => {
+      if (index % elementsPerRow === 0) {
+        return [...acc, [item]];
+      }
+      acc[acc.length - 1].push(item);
+      return acc;
+    }, []);
   }
 
   return (
