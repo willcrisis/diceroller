@@ -79,7 +79,7 @@ const selectSession = async (session, setCurrentSession, navigation) => {
 };
 
 const currentSessionBackground = (currentSession, session) => ({
-  backgroundColor: currentSession.key === session.key ? '#52d98f' : '#ffffff',
+  backgroundColor: currentSession && currentSession.key === session.key ? '#52d98f' : '#ffffff',
 });
 
 const SessionsScreen = ({ navigation }) => {
