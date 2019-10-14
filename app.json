@@ -26,6 +26,8 @@
     "ios": {
       "supportsTablet": true
     },
-    "scheme": "diceroller"
+    "scheme": "diceroller",
+    "description": "",
+    "githubUrl": "https://github.com/willcrisis/diceroller"
   }
 }
